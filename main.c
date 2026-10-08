@@ -41,12 +41,59 @@ void *Adicionar(void *pBuffer) {
     return pBuffer;
 }
 
+void *Remover(void *pBuffer) {
+    printf("Digite o nome de quem você quer remover\n");
+    printf("Nome: ");
+    scanf(" %51[^\n]", (char *)pBuffer + IN_NAME);
+
+    for(INT_AT(RI) = 0; INT_AT(RI) < INT_AT(TOTAL); INT_AT(RI)++) {
+        if(strcmp((char *)pBuffer + HEADER_SIZE + (INT_AT(RI) * PERSON_SIZE), (char *)pBuffer + IN_NAME) == 0) {
+            break;
+        }
+    }
+    if( INT_AT(RI) == INT_AT(TOTAL) ) {
+        printf("Pessoa não encontrada.\n");
+        return pBuffer;
+    } else {
+        memmove((char *)pBuffer + INT_AT(RI)*PERSON_SIZE+HEADER_SIZE, (char *)pBuffer + (INT_AT(RI)+1)*PERSON_SIZE+HEADER_SIZE, (INT_AT(TOTAL) - INT_AT(RI) - 1) * PERSON_SIZE);
+    }
+    INT_AT(TOTAL)--;
+    pBuffer = realloc(pBuffer, HEADER_SIZE + (INT_AT(TOTAL) * PERSON_SIZE));
+    if(pBuffer == NULL) {
+        exit(1);
+    }
+    return pBuffer;
+}
+
 void *Buscar(void *pBuffer) {
-    printf("Buscar\n");
+    printf("Digite o nome da pessoa que você quer buscar\n");
+    printf("Nome: ");
+    scanf(" %51[^\n]", (char *)pBuffer + IN_NAME);
+
+    for(INT_AT(RI) = 0; INT_AT(RI) < INT_AT(TOTAL); INT_AT(RI)++) {
+        if(strcmp((char *)pBuffer + HEADER_SIZE + (INT_AT(RI) * PERSON_SIZE), (char *)pBuffer + IN_NAME) == 0) {
+            break;
+        }
+    }
+    if( INT_AT(RI) == INT_AT(TOTAL) ) {
+        printf("Pessoa não encontrada.\n");
+        return pBuffer;
+    }
+
+    printf("Nome: %s\n", (char *)pBuffer + HEADER_SIZE + (INT_AT(RI) * PERSON_SIZE) + R_NAME);
+    printf("Idade: %d\n", INT_AT(INT_AT(RI) * PERSON_SIZE + HEADER_SIZE + R_AGE));
+    printf("Email: %s\n", (char *)pBuffer + HEADER_SIZE + (INT_AT(RI) * PERSON_SIZE) + R_MAIL);
+    return pBuffer;
 }
 
 void *Listar(void *pBuffer) {
-    printf("Listar\n")
+    for(INT_AT(RI) = 0; INT_AT(RI) < INT_AT(TOTAL); INT_AT(RI)++) {
+        printf("Nome: %s\n", (char *)pBuffer + HEADER_SIZE + (INT_AT(RI) * PERSON_SIZE) + R_NAME);
+        printf("Idade: %d\n", INT_AT(INT_AT(RI) * PERSON_SIZE + HEADER_SIZE + R_AGE));
+        printf("Email: %s\n", (char *)pBuffer + HEADER_SIZE + (INT_AT(RI) * PERSON_SIZE) + R_MAIL);
+    }
+    printf("Total de pessoas: %d\n", INT_AT(TOTAL));
+    return pBuffer;
 }
 
 int main ( void ) {
@@ -73,13 +120,13 @@ int main ( void ) {
                 pBuffer = Adicionar(pBuffer);
                 break;
             case 2:
-                printf("Remover\n");
+                pBuffer = Remover(pBuffer);
                 break;
             case 3:
-                printf("Buscar\n");
+                Buscar(pBuffer);
                 break;
             case 4:
-                printf("Listar\n");
+                Listar(pBuffer);
                 break;
             case 5:
                 printf("Sair\n");
